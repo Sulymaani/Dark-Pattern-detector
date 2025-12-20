@@ -1,9 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from app.services.ocr_service import extract_text
 from app.services.classifier import classify_patterns
 from app.models.schemas import DetectionResponse, PatternResult
 import logging
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -13,6 +15,19 @@ app = FastAPI(
     description="Detects dark patterns in mental health app screenshots",
     version="1.0.0",
 )
+
+# Get the project root directory (parent of app/)
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / "static"
+
+# Mount static files
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/")
+async def root():
+    """Serve the frontend"""
+    return FileResponse(str(STATIC_DIR / "index.html"))
 
 
 @app.post("/detect", response_model=DetectionResponse)
