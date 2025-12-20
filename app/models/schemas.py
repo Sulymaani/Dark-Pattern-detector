@@ -22,4 +22,5 @@ class DetectionResponse(BaseModel):
     success: bool
     extracted_text: str
     patterns: List[PatternResult]
+    coercion_score: Optional[float] = None  # Overall severity score (0.0-1.0)
     message: str

@@ -38,6 +38,38 @@ def test_detect_no_text(mock_classify, mock_extract):
     data = response.json()
     assert data["success"] is True
     assert data["patterns"] == []
+    assert data["coercion_score"] == 0.0
+
+
+@patch("app.main.extract_text")
+@patch("app.main.classify_patterns")
+def test_detect_with_patterns(mock_classify, mock_extract):
+    """Test detection with patterns found"""
+    from app.models.schemas import PatternResult, PatternType
+    
+    mock_extract.return_value = "Limited time offer! Subscribe now!"
+    mock_classify.return_value = [
+        PatternResult(
+            pattern_type=PatternType.NAGGING,
+            confidence=0.85,
+            evidence="Limited time offer! Subscribe now!",
+            explanation="Uses urgency and pressure tactics"
+        )
+    ]
+
+    png_bytes = create_minimal_png()
+
+    response = client.post(
+        "/detect", files={"file": ("test.png", png_bytes, "image/png")}
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert len(data["patterns"]) == 1
+    assert data["patterns"][0]["pattern_type"] == "nagging"
+    assert "coercion_score" in data
+    assert 0.0 <= data["coercion_score"] <= 1.0
 
 
 def create_minimal_png():
