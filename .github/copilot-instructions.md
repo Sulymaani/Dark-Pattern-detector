@@ -3,13 +3,15 @@
 ## Architecture Overview
 
 This is a FastAPI service that detects dark patterns in mental health app screenshots. The pipeline flows:
-**Image Upload → OCR (Tesseract) → Text Classification (Claude API) → JSON Response**
+**Image Upload → OCR (Tesseract) → Feature Engineering → Text Classification (Claude API) → Scoring → JSON Response**
 
 ### Key Components
 
 - [app/main.py](../app/main.py) - FastAPI app with `/detect` and `/health` endpoints
 - [app/services/ocr_service.py](../app/services/ocr_service.py) - Tesseract OCR wrapper
+- [app/services/feature_engineering.py](../app/services/feature_engineering.py) - Text feature extraction (keyword counts, stylistic features)
 - [app/services/classifier.py](../app/services/classifier.py) - Claude API integration with structured prompt
+- [app/services/scoring.py](../app/services/scoring.py) - Coercion score calculation based on detected patterns
 - [app/models/schemas.py](../app/models/schemas.py) - Pydantic models and `PatternType` enum
 - [app/utils/config.py](../app/utils/config.py) - Settings via `pydantic-settings` (loads `.env`)
 
@@ -62,7 +64,19 @@ Follow the pattern in `main.py`: use Pydantic response models, async handlers, a
 
 ### Service Layer Pattern
 
-Services in `app/services/` are stateless functions. OCR is sync, classifier is async. The classifier creates a new `anthropic.Anthropic` client per request (uses `settings` singleton for API key).
+Services in `app/services/` are stateless functions:
+- **ocr_service.py**: Sync function - extracts text from images using Tesseract
+- **feature_engineering.py**: Sync function - computes text features (keyword counts, stylistic metrics)
+- **classifier.py**: Async function - classifies patterns using Claude API (creates new client per request)
+- **scoring.py**: Sync function - computes coercion score from detected patterns using severity weights
+
+### Detection Pipeline
+
+The `/detect` endpoint orchestrates four steps:
+1. **OCR Extraction**: `extract_text()` - converts image to text
+2. **Feature Engineering**: `compute_text_features()` - analyzes text for pattern indicators
+3. **Classification**: `classify_patterns()` - uses Claude API to identify specific dark patterns
+4. **Scoring**: `compute_coercion_score()` - calculates overall severity score (0.0-1.0)
 
 ### Testing Pattern
 

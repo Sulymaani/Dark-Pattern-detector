@@ -2,6 +2,13 @@
 
 Detects dark patterns in mental health app screenshots using OCR and Claude AI.
 
+## Detection Pipeline
+
+1. **OCR Extraction** - Extracts text from uploaded screenshot using Tesseract
+2. **Feature Engineering** - Analyzes text for pattern indicators (urgency keywords, emotional manipulation, subscription terms, etc.)
+3. **Pattern Classification** - Uses Claude AI to identify specific dark pattern types with confidence scores
+4. **Coercion Scoring** - Calculates overall severity score (0.0-1.0) based on detected patterns
+
 ## Patterns Detected
 
 - **Forced Continuity** - Hidden auto-renewal, unclear subscription terms
@@ -70,9 +77,12 @@ curl -X POST "http://localhost:8000/detect" \
       "explanation": "Auto-renewal mentioned in small text, may not be clearly visible to users"
     }
   ],
+  "coercion_score": 0.76,
   "message": "Analysis complete"
 }
 ```
+
+The `coercion_score` is a float between 0.0 (no coercion) and 1.0 (maximum coercion), calculated based on the severity and confidence of detected patterns.
 
 ### GET /health
 
@@ -90,14 +100,17 @@ Dark Pattern detector/
 │   │   └── schemas.py       # Pydantic models
 │   ├── services/
 │   │   ├── __init__.py
-│   │   ├── ocr_service.py   # Tesseract OCR
-│   │   └── classifier.py    # Claude API integration
+│   │   ├── ocr_service.py          # Tesseract OCR
+│   │   ├── feature_engineering.py  # Text feature extraction
+│   │   ├── classifier.py           # Claude API integration
+│   │   └── scoring.py              # Coercion score calculation
 │   └── utils/
 │       ├── __init__.py
 │       └── config.py        # Settings management
 ├── tests/
 │   ├── __init__.py
-│   └── test_api.py
+│   ├── test_api.py          # API integration tests
+│   └── test_services.py     # Service unit tests
 ├── requirements.txt
 ├── .env.example
 └── README.md
