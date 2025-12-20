@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dark Pattern Detector</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🔍 Dark Pattern Detector</h1>
+        <p class="subtitle">
+          Analyze mental health app screenshots for manipulative design patterns
+        </p>
+      </header>
+
+      <main>
+        <!-- Upload Section -->
+        <section class="upload-section">
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-content">
+              <span class="dropzone-icon">📤</span>
+              <p>Drag & drop a screenshot here</p>
+              <p class="dropzone-hint">or click to select a file</p>
+              <input type="file" id="fileInput" accept="image/*" hidden />
+            </div>
+          </div>
+
+          <!-- Image Preview -->
+          <div class="preview-container" id="previewContainer" hidden>
+            <img id="imagePreview" alt="Preview" />
+            <button class="btn btn-secondary" id="clearBtn">Clear</button>
+          </div>
+
+          <button class="btn btn-primary" id="analyzeBtn" disabled>
+            <span class="btn-text">Analyze Screenshot</span>
+            <span class="btn-loader" hidden></span>
+          </button>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection" hidden>
+          <h2>Analysis Results</h2>
+
+          <!-- Extracted Text -->
+          <div class="extracted-text" id="extractedText">
+            <h3>📝 Extracted Text</h3>
+            <pre id="textContent"></pre>
+          </div>
+
+          <!-- Patterns Found -->
+          <div class="patterns-container" id="patternsContainer">
+            <h3>⚠️ Detected Patterns</h3>
+            <div id="patternsList"></div>
+          </div>
+
+          <!-- No Patterns Message -->
+          <div class="no-patterns" id="noPatterns" hidden>
+            <span class="success-icon">✅</span>
+            <p>No dark patterns detected in this screenshot.</p>
+          </div>
+        </section>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" hidden>
+          <span>⚠️</span>
+          <p id="errorText"></p>
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          Detects: Forced Continuity • Nagging • Obstruction • Confirmshaming •
+          Privacy Zuckering
+        </p>
+      </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
