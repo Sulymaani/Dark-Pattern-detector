@@ -26,7 +26,7 @@ class TestFeatureEngineering:
         """Test detection of urgency keywords"""
         text = "Act now! Limited time offer expires today!"
         features = compute_text_features(text)
-        assert features["urgency_count"] >= 3  # now, limited, expires, today
+        assert features["urgency_count"] >= 3  # now, limited, expires
         assert features["exclamation_count"] == 2
     
     def test_pressure_keywords(self):
@@ -45,7 +45,7 @@ class TestFeatureEngineering:
         """Test detection of subscription-related keywords"""
         text = "Start your free trial today. Auto-renew monthly subscription."
         features = compute_text_features(text)
-        assert features["subscription_count"] >= 3  # trial, auto-renew, monthly, subscription
+        assert features["subscription_count"] >= 4  # trial, monthly, subscription, and auto-renew components
     
     def test_privacy_keywords(self):
         """Test detection of privacy-related keywords"""
@@ -57,7 +57,7 @@ class TestFeatureEngineering:
         """Test detection of ALL CAPS words"""
         text = "BUY NOW or MISS OUT on this DEAL"
         features = compute_text_features(text)
-        assert features["all_caps_words"] >= 3  # BUY, NOW, MISS, OUT, DEAL
+        assert features["all_caps_words"] == 5  # BUY, NOW, MISS, OUT, DEAL
     
     def test_punctuation_counts(self):
         """Test counting of exclamation marks and questions"""
