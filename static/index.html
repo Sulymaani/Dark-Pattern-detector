@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dark Pattern Detector</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🔍 Dark Pattern Detector</h1>
+        <p>
+          Upload a screenshot from a mental health app to detect dark patterns
+        </p>
+      </header>
+
+      <main>
+        <div class="upload-section">
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-content">
+              <span class="upload-icon">📤</span>
+              <p>Drag and drop an image here</p>
+              <p class="or-text">or</p>
+              <label for="fileInput" class="file-label">Choose File</label>
+              <input type="file" id="fileInput" accept="image/*" hidden />
+            </div>
+          </div>
+          <div id="preview" class="preview hidden">
+            <img id="previewImage" alt="Preview" />
+            <button id="clearBtn" class="clear-btn">✕</button>
+          </div>
+        </div>
+
+        <button id="analyzeBtn" class="analyze-btn" disabled>
+          Analyze Screenshot
+        </button>
+
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Analyzing image...</p>
+        </div>
+
+        <div id="results" class="results hidden">
+          <div class="coercion-score-section">
+            <h2>Coercion Score</h2>
+            <div class="score-container">
+              <div class="score-bar">
+                <div class="score-fill" id="scoreFill"></div>
+              </div>
+              <span class="score-value" id="scoreValue">0</span>
+            </div>
+            <p class="score-description" id="scoreDescription"></p>
+          </div>
+
+          <div class="extracted-text-section">
+            <h2>Extracted Text</h2>
+            <div class="extracted-text" id="extractedText"></div>
+          </div>
+
+          <div class="features-section" id="featuresSection">
+            <h2>Detected Features</h2>
+            <div class="features-grid" id="featuresGrid"></div>
+          </div>
+
+          <div class="patterns-section">
+            <h2>Detected Patterns</h2>
+            <div id="patternsList" class="patterns-list"></div>
+          </div>
+        </div>
+
+        <div id="error" class="error hidden">
+          <p id="errorMessage"></p>
+        </div>
+      </main>
+
+      <footer>
+        <p>Dark Pattern Detection API v1.0.0</p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

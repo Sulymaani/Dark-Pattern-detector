@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from enum import Enum
 
 
@@ -23,3 +23,5 @@ class DetectionResponse(BaseModel):
     extracted_text: str
     patterns: List[PatternResult]
     message: str
+    coercion_score: float = 0.0  # 0-100 scale weighted score
+    features: Optional[Dict[str, Any]] = None  # Pre-computed text features
