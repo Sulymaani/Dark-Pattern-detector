@@ -14,7 +14,13 @@ const errorMessage = document.getElementById('errorMessage');
 let selectedFile = null;
 
 // Event Listeners
-dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('click', (e) => {
+  // Prevent double-trigger when clicking on the label (which already opens file input)
+  if (e.target.tagName === 'LABEL' || e.target.closest('label')) {
+    return;
+  }
+  fileInput.click();
+});
 fileInput.addEventListener('change', handleFileSelect);
 clearBtn.addEventListener('click', clearSelection);
 analyzeBtn.addEventListener('click', analyzeImage);
@@ -130,21 +136,21 @@ function displayCoercionScore(score) {
     scoreFill.style.width = `${score}%`;
   }, 100);
 
-  // Set color based on score
+  // Set color based on score (neo-brutalist solid colors)
   if (score >= 70) {
-    scoreFill.style.background = 'linear-gradient(90deg, #e53e3e, #c53030)';
+    scoreFill.style.background = '#ff6b6b';
     scoreDescription.textContent =
-      'High risk - Multiple coercive dark patterns detected';
+      'HIGH RISK - MULTIPLE COERCIVE DARK PATTERNS DETECTED';
   } else if (score >= 40) {
-    scoreFill.style.background = 'linear-gradient(90deg, #ed8936, #dd6b20)';
+    scoreFill.style.background = '#ffeb3b';
     scoreDescription.textContent =
-      'Medium risk - Some concerning patterns detected';
+      'MEDIUM RISK - SOME CONCERNING PATTERNS DETECTED';
   } else if (score > 0) {
-    scoreFill.style.background = 'linear-gradient(90deg, #ecc94b, #d69e2e)';
-    scoreDescription.textContent = 'Low risk - Minor concerns detected';
+    scoreFill.style.background = '#4ecdc4';
+    scoreDescription.textContent = 'LOW RISK - MINOR CONCERNS DETECTED';
   } else {
-    scoreFill.style.background = 'linear-gradient(90deg, #48bb78, #38a169)';
-    scoreDescription.textContent = 'No dark patterns detected';
+    scoreFill.style.background = '#4ecdc4';
+    scoreDescription.textContent = 'NO DARK PATTERNS DETECTED';
   }
 
   scoreValue.textContent = score.toFixed(1);

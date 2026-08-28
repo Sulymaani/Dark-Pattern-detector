@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 PATTERN_KEYWORDS = {
     "forced_continuity": [
@@ -57,6 +57,31 @@ PATTERN_KEYWORDS = {
     ],
 }
 
+# Urgency/scarcity indicators (cross-pattern signal)
+URGENCY_PATTERNS: List[str] = [
+    r"only \d+ left",
+    r"expires? (soon|today|in \d+)",
+    r"last chance",
+    r"ending soon",
+    r"while supplies last",
+    r"act fast",
+    r"don.t wait",
+    r"now or never",
+    r"today only",
+    r"hours left",
+    r"minutes left",
+]
+
+# Loss aversion language
+LOSS_AVERSION_PATTERNS: List[str] = [
+    r"you.ll (miss|lose)",
+    r"don.t lose",
+    r"before it.s (too late|gone)",
+    r"missing out",
+    r"fomo",
+    r"regret",
+]
+
 
 def compute_text_features(text: str) -> Dict[str, Any]:
     """
@@ -70,8 +95,10 @@ def compute_text_features(text: str) -> Dict[str, Any]:
     """
     lower = text.lower()
     length = len(lower)
-    word_count = len(lower.split())
+    words = lower.split()
+    word_count = len(words)
 
+    # Keyword hits per pattern type
     keyword_counts: Dict[str, int] = {}
     for pattern, regexes in PATTERN_KEYWORDS.items():
         count = 0
@@ -79,9 +106,34 @@ def compute_text_features(text: str) -> Dict[str, Any]:
             count += len(re.findall(rx, lower))
         keyword_counts[f"{pattern}_keyword_hits"] = count
 
+    # Urgency indicators
+    urgency_hits = sum(len(re.findall(rx, lower)) for rx in URGENCY_PATTERNS)
+
+    # Loss aversion language
+    loss_aversion_hits = sum(
+        len(re.findall(rx, lower)) for rx in LOSS_AVERSION_PATTERNS
+    )
+
+    # Caps ratio (aggressive messaging indicator)
+    caps_count = sum(1 for c in text if c.isupper())
+    caps_ratio = caps_count / max(len(text), 1)
+
+    # Punctuation analysis
+    exclamation_count = text.count("!")
+    question_count = text.count("?")
+
+    # Sentence count (for context density)
+    sentence_count = len(re.findall(r"[.!?]+", text))
+
     features: Dict[str, Any] = {
         "length_chars": length,
         "word_count": word_count,
+        "sentence_count": sentence_count,
+        "urgency_hits": urgency_hits,
+        "loss_aversion_hits": loss_aversion_hits,
+        "caps_ratio": round(caps_ratio, 3),
+        "exclamation_count": exclamation_count,
+        "question_count": question_count,
         **keyword_counts,
     }
     return features
